@@ -11,7 +11,11 @@ pub struct Error(#[from] reqwest::Error);
 pub type Response = reqwest::blocking::Response;
 
 pub fn get(url: impl IntoUrl) -> Result<Response, Error> {
-    Ok(Client::new()
+    let client = Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build()?;
+
+    Ok(client
         .get(url)
         // Some sites require a user agent.
         .header("User-Agent", concat!("fnm ", env!("CARGO_PKG_VERSION")))
